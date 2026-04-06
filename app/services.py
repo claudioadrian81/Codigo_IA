@@ -37,11 +37,11 @@ def dashboard_summary() -> dict:
 
 
 def reports_data() -> dict:
-    totals = (
+    totals_rows = (
         db.session.query(
             Child.name,
-            func.coalesce(func.sum(ActivityLog.reward_minutes_snapshot), 0),
-            func.count(ActivityLog.id),
+            func.coalesce(func.sum(ActivityLog.reward_minutes_snapshot), 0).label("minutes"),
+            func.count(ActivityLog.id).label("tasks"),
         )
         .outerjoin(ActivityLog, ActivityLog.child_id == Child.id)
         .group_by(Child.id)
@@ -49,7 +49,7 @@ def reports_data() -> dict:
         .all()
     )
 
-    activity_freq = (
+    activity_rows = (
         db.session.query(Activity.name, func.count(ActivityLog.id).label("times"))
         .join(ActivityLog, ActivityLog.activity_id == Activity.id)
         .group_by(Activity.id)
@@ -59,8 +59,11 @@ def reports_data() -> dict:
     )
 
     start_week = datetime.combine(date.today() - timedelta(days=6), datetime.min.time())
-    weekly = (
-        db.session.query(Child.name, func.coalesce(func.sum(ActivityLog.reward_minutes_snapshot), 0))
+    weekly_rows = (
+        db.session.query(
+            Child.name,
+            func.coalesce(func.sum(ActivityLog.reward_minutes_snapshot), 0).label("minutes"),
+        )
         .outerjoin(
             ActivityLog,
             (ActivityLog.child_id == Child.id) & (ActivityLog.performed_at >= start_week),
@@ -69,6 +72,15 @@ def reports_data() -> dict:
         .order_by(Child.name)
         .all()
     )
+
+    totals = [
+        {"name": row.name, "minutes": int(row.minutes or 0), "tasks": int(row.tasks or 0)}
+        for row in totals_rows
+    ]
+    activity_freq = [
+        {"name": row.name, "times": int(row.times or 0)} for row in activity_rows
+    ]
+    weekly = [{"name": row.name, "minutes": int(row.minutes or 0)} for row in weekly_rows]
 
     return {
         "totals": totals,
