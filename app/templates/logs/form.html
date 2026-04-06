@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Registrar tarea{% endblock %}
+{% block content %}
+<h2 class="ui header">Registrar tarea realizada</h2>
+<form class="ui form" method="post">
+  <div class="two fields">
+    <div class="field">
+      <label>Hija</label>
+      <select class="ui dropdown" name="child_id" required>
+        <option value="">Seleccionar...</option>
+        {% for child in children %}
+          <option value="{{ child.id }}">{{ child.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label>Actividad</label>
+      <select class="ui dropdown" name="activity_id" required>
+        <option value="">Seleccionar...</option>
+        {% for activity in activities %}
+          <option value="{{ activity.id }}">{{ activity.name }} (+{{ activity.reward_minutes }} min)</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="field">
+    <label>Fecha y hora</label>
+    <input type="datetime-local" name="performed_at" required>
+  </div>
+  <div class="field">
+    <label>Observaciones (opcional)</label>
+    <textarea rows="3" name="notes"></textarea>
+  </div>
+  <button class="ui primary button" type="submit">Guardar registro</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  $('.ui.dropdown').dropdown();
+  const now = new Date();
+  now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+  document.querySelector('input[name="performed_at"]').value = now.toISOString().slice(0,16);
+</script>
+{% endblock %}

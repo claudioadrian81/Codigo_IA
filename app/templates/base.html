@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Contador de Beneficios{% endblock %}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.5.0/dist/semantic.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  {% if session.get('user_id') %}
+  <div class="ui inverted menu">
+    <a class="item {% if request.endpoint == 'dashboard.index' %}active{% endif %}" href="{{ url_for('dashboard.index') }}">Inicio</a>
+    <a class="item {% if request.endpoint and request.endpoint.startswith('children.') %}active{% endif %}" href="{{ url_for('children.list_children') }}">Hijas</a>
+    <a class="item {% if request.endpoint and request.endpoint.startswith('activities.') %}active{% endif %}" href="{{ url_for('activities.list_activities') }}">Actividades</a>
+    <a class="item {% if request.endpoint == 'logs.create_log' %}active{% endif %}" href="{{ url_for('logs.create_log') }}">Registrar tarea</a>
+    <a class="item {% if request.endpoint == 'logs.history' %}active{% endif %}" href="{{ url_for('logs.history') }}">Historial</a>
+    <a class="item {% if request.endpoint and request.endpoint.startswith('reports.') %}active{% endif %}" href="{{ url_for('reports.index') }}">Reportes</a>
+    <div class="right menu">
+      <div class="item">Usuario: <strong>{{ session.get('username') }}</strong></div>
+      <a class="item" href="{{ url_for('auth.logout') }}">Salir</a>
+    </div>
+  </div>
+  {% endif %}
+
+  <main class="ui main container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="ui {% if category == 'success' %}positive{% else %}negative{% endif %} message">
+            <i class="close icon"></i>
+            <div class="header">{{ 'Éxito' if category == 'success' else 'Error' }}</div>
+            <p>{{ message }}</p>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script>
+    $('.message .close').on('click', function() {
+      $(this).closest('.message').transition('fade');
+    });
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

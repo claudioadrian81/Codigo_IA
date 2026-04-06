@@ -1,0 +1,12 @@
+body {
+  background: #f7f9fb;
+}
+
+.main.container {
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}
+
+.ui.menu .item.active {
+  font-weight: 700;
+}

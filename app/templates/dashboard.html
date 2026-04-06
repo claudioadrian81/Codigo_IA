@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1 class="ui header">Resumen general</h1>
+
+<div class="ui three stackable cards">
+  {% for stat in child_stats %}
+    <div class="card">
+      <div class="content">
+        <div class="header">{{ stat.name }}</div>
+        <div class="meta">Tareas realizadas: {{ stat.tasks_count }}</div>
+        <div class="description">
+          <h3 class="ui {{ stat.color }} header">{{ stat.minutes }} minutos</h3>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="ui message">No hay hijas registradas aún.</div>
+  {% endfor %}
+</div>
+
+<div class="ui segment">
+  <h3 class="ui header">Comparativo de minutos</h3>
+  <canvas id="minutesChart"></canvas>
+</div>
+
+<h3 class="ui dividing header">Últimas actividades</h3>
+<table class="ui celled table">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Hija</th>
+      <th>Actividad</th>
+      <th>Minutos</th>
+      <th>Notas</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in recent_logs %}
+      <tr>
+        <td>{{ log.performed_at.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td>{{ log.child.name }}</td>
+        <td>{{ log.activity.name }}</td>
+        <td>{{ log.reward_minutes_snapshot }}</td>
+        <td>{{ log.notes or '-' }}</td>
+      </tr>
+    {% else %}
+      <tr><td colspan="5" class="center aligned">Sin actividades registradas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const childLabels = {{ child_stats | map(attribute='name') | list | tojson }};
+  const minutesData = {{ child_stats | map(attribute='minutes') | list | tojson }};
+
+  if (childLabels.length) {
+    new Chart(document.getElementById('minutesChart'), {
+      type: 'bar',
+      data: {
+        labels: childLabels,
+        datasets: [{
+          label: 'Minutos acumulados',
+          data: minutesData,
+          backgroundColor: ['#2185d0', '#db2828', '#21ba45', '#f2711c']
+        }]
+      },
+      options: {responsive: true}
+    });
+  }
+</script>
+{% endblock %}
