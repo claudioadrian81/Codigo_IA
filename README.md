@@ -57,16 +57,29 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Inicializar base de datos (con datos de ejemplo)
+## Configuración de base de datos
+
+Por defecto la aplicación usa SQLite local en `app.db` (raíz del proyecto).
+
+Si deseas otra ubicación, define la variable de entorno `DATABASE_URL`, por ejemplo:
 
 ```bash
-flask --app app.py init-db
+export DATABASE_URL="sqlite:////ruta/absoluta/mi_bd.db"
 ```
 
-Este comando:
-- crea tablas,
-- carga 2 hijas de ejemplo,
-- carga actividades predefinidas.
+En Windows PowerShell:
+
+```powershell
+$env:DATABASE_URL="sqlite:///C:/ruta/mi_bd.db"
+```
+
+## Inicialización automática de base de datos
+
+La app crea automáticamente las tablas al arrancar y, si la base está vacía, carga datos de ejemplo:
+- Hijas: Ana y Sofía
+- Actividades domésticas predefinidas
+
+No necesitas ejecutar comandos adicionales de inicialización.
 
 ## Ejecutar
 

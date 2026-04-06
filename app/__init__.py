@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from flask import Flask
 
 from .config import Config
@@ -7,6 +9,7 @@ from .extensions import db
 def create_app(config_class: type[Config] = Config) -> Flask:
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(config_class)
+    Path(app.instance_path).mkdir(parents=True, exist_ok=True)
 
     db.init_app(app)
 
@@ -22,34 +25,39 @@ def create_app(config_class: type[Config] = Config) -> Flask:
     app.register_blueprint(logs_bp)
     app.register_blueprint(reports_bp)
 
-    register_cli(app)
+    initialize_database(app)
     register_error_handlers(app)
 
     return app
 
 
-def register_cli(app: Flask) -> None:
+def initialize_database(app: Flask) -> None:
+    """Crea las tablas y carga datos iniciales al iniciar la app."""
     from .models import Activity, Child
 
-    @app.cli.command("init-db")
-    def init_db() -> None:
-        """Inicializa la base de datos y carga datos de ejemplo."""
-        db.drop_all()
+    with app.app_context():
         db.create_all()
 
-        children = [Child(name="Ana"), Child(name="Sofía")]
-        activities = [
-            Activity(name="Ordenar el cuarto", reward_minutes=15, description="Dejar todo en orden"),
-            Activity(name="Lavar los platos", reward_minutes=20),
-            Activity(name="Barrer el piso", reward_minutes=15),
-            Activity(name="Hacer la cama", reward_minutes=10),
-            Activity(name="Guardar la ropa", reward_minutes=12),
-            Activity(name="Limpiar la mesa", reward_minutes=8),
-        ]
+        if Child.query.count() == 0:
+            db.session.add_all([Child(name="Ana"), Child(name="Sofía")])
 
-        db.session.add_all(children + activities)
+        if Activity.query.count() == 0:
+            db.session.add_all(
+                [
+                    Activity(
+                        name="Ordenar el cuarto",
+                        reward_minutes=15,
+                        description="Dejar todo en orden",
+                    ),
+                    Activity(name="Lavar los platos", reward_minutes=20),
+                    Activity(name="Barrer el piso", reward_minutes=15),
+                    Activity(name="Hacer la cama", reward_minutes=10),
+                    Activity(name="Guardar la ropa", reward_minutes=12),
+                    Activity(name="Limpiar la mesa", reward_minutes=8),
+                ]
+            )
+
         db.session.commit()
-        print("Base de datos inicializada con datos de ejemplo.")
 
 
 def register_error_handlers(app: Flask) -> None:

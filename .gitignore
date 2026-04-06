@@ -10,3 +10,4 @@ instance/*.db
 .flaskenv
 .pytest_cache/
 .DS_Store
+app.db
