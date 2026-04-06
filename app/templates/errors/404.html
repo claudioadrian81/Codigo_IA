@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}No encontrado{% endblock %}
+{% block content %}
+<div class="ui negative message">
+  <div class="header">404 - Página no encontrada</div>
+  <p>La URL solicitada no existe.</p>
+</div>
+<a href="{{ url_for('dashboard.index') }}" class="ui button primary">Volver al inicio</a>
+{% endblock %}

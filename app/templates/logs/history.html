@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}Historial{% endblock %}
+{% block content %}
+<h2 class="ui header">Historial de actividades</h2>
+
+<form class="ui form segment" method="get">
+  <div class="four fields">
+    <div class="field">
+      <label>Hija</label>
+      <select name="child_id" class="ui dropdown">
+        <option value="">Todas</option>
+        {% for child in children %}
+          <option value="{{ child.id }}" {% if filters.child_id == child.id %}selected{% endif %}>{{ child.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label>Actividad</label>
+      <select name="activity_id" class="ui dropdown">
+        <option value="">Todas</option>
+        {% for activity in activities %}
+          <option value="{{ activity.id }}" {% if filters.activity_id == activity.id %}selected{% endif %}>{{ activity.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="field">
+      <label>Desde</label>
+      <input type="date" name="date_from" value="{{ filters.date_from }}">
+    </div>
+    <div class="field">
+      <label>Hasta</label>
+      <input type="date" name="date_to" value="{{ filters.date_to }}">
+    </div>
+  </div>
+  <button class="ui button primary" type="submit">Filtrar</button>
+  <a class="ui button" href="{{ url_for('logs.history') }}">Limpiar</a>
+</form>
+
+<table class="ui celled table">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Hija</th>
+      <th>Actividad</th>
+      <th>Minutos otorgados</th>
+      <th>Notas</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+      <tr>
+        <td>{{ log.performed_at.strftime('%d/%m/%Y %H:%M') }}</td>
+        <td>{{ log.child.name }}</td>
+        <td>{{ log.activity.name }}</td>
+        <td>{{ log.reward_minutes_snapshot }}</td>
+        <td>{{ log.notes or '-' }}</td>
+        <td>
+          <form action="{{ url_for('logs.delete_log', log_id=log.id) }}" method="post" onsubmit="return confirm('¿Eliminar registro?');">
+            <button type="submit" class="ui tiny red button">Eliminar</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="center aligned">Sin registros para los filtros seleccionados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script>$('.ui.dropdown').dropdown();</script>
+{% endblock %}

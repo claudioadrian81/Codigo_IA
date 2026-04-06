@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Reportes{% endblock %}
+{% block content %}
+<h2 class="ui header">Reportes</h2>
+
+<div class="ui three statistics">
+  {% for name, minutes, tasks in totals %}
+    <div class="statistic">
+      <div class="value">{{ minutes }}</div>
+      <div class="label">{{ name }} (min)</div>
+      <div class="label">{{ tasks }} tareas</div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="ui stackable two column grid" style="margin-top:1rem;">
+  <div class="column">
+    <div class="ui segment">
+      <h4 class="ui header">Minutos acumulados por hija</h4>
+      <canvas id="minutesByChild"></canvas>
+    </div>
+  </div>
+  <div class="column">
+    <div class="ui segment">
+      <h4 class="ui header">Actividades más frecuentes</h4>
+      <canvas id="activityFreq"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="ui segment">
+  <h4 class="ui header">Resumen semanal (últimos 7 días)</h4>
+  <canvas id="weeklySummary"></canvas>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const totals = {{ totals | tojson }};
+const activityFreq = {{ activity_freq | tojson }};
+const weekly = {{ weekly | tojson }};
+
+new Chart(document.getElementById('minutesByChild'), {
+  type: 'bar',
+  data: {
+    labels: totals.map(t => t[0]),
+    datasets: [{ label: 'Minutos', data: totals.map(t => t[1]), backgroundColor: ['#2185d0','#db2828','#21ba45','#f2711c'] }]
+  }
+});
+
+new Chart(document.getElementById('activityFreq'), {
+  type: 'pie',
+  data: {
+    labels: activityFreq.map(a => a[0]),
+    datasets: [{ data: activityFreq.map(a => a[1]), backgroundColor: ['#6435c9','#21ba45','#db2828','#f2711c','#00b5ad','#a5673f','#e03997'] }]
+  }
+});
+
+new Chart(document.getElementById('weeklySummary'), {
+  type: 'bar',
+  data: {
+    labels: weekly.map(w => w[0]),
+    datasets: [{ label: 'Minutos (7 días)', data: weekly.map(w => w[1]), backgroundColor: '#00b5ad' }]
+  }
+});
+</script>
+{% endblock %}
