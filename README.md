@@ -81,6 +81,16 @@ La app crea automáticamente las tablas al arrancar y, si la base está vacía, 
 
 No necesitas ejecutar comandos adicionales de inicialización.
 
+## Acceso (login)
+
+La app ahora solicita autenticación simple con usuario y contraseña.
+
+Credenciales iniciales por defecto:
+- Usuario: `admin`
+- Contraseña: `admin123`
+
+Estas credenciales se crean automáticamente la primera vez que se inicia el sistema.
+
 ## Ejecutar
 
 ### Opción 1
@@ -105,6 +115,7 @@ Codigo_IA/
 │   ├── routes/
 │   │   ├── activities.py
 │   │   ├── children.py
+│   │   ├── auth.py
 │   │   ├── dashboard.py
 │   │   ├── logs.py
 │   │   └── reports.py
@@ -112,6 +123,7 @@ Codigo_IA/
 │   ├── templates/
 │   │   ├── activities/
 │   │   ├── children/
+│   │   ├── auth/
 │   │   ├── logs/
 │   │   ├── reports/
 │   │   ├── errors/

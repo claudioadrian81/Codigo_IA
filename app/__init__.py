@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from flask import Flask
+from flask import Flask, redirect, request, session, url_for
 
 from .config import Config
 from .extensions import db
@@ -14,11 +14,13 @@ def create_app(config_class: type[Config] = Config) -> Flask:
     db.init_app(app)
 
     from .routes.activities import activities_bp
+    from .routes.auth import auth_bp
     from .routes.children import children_bp
     from .routes.dashboard import dashboard_bp
     from .routes.logs import logs_bp
     from .routes.reports import reports_bp
 
+    app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(children_bp)
     app.register_blueprint(activities_bp)
@@ -26,6 +28,7 @@ def create_app(config_class: type[Config] = Config) -> Flask:
     app.register_blueprint(reports_bp)
 
     initialize_database(app)
+    register_auth_guard(app)
     register_error_handlers(app)
 
     return app
@@ -33,10 +36,15 @@ def create_app(config_class: type[Config] = Config) -> Flask:
 
 def initialize_database(app: Flask) -> None:
     """Crea las tablas y carga datos iniciales al iniciar la app."""
-    from .models import Activity, Child
+    from .models import Activity, Child, User
 
     with app.app_context():
         db.create_all()
+
+        if User.query.count() == 0:
+            admin = User(username="admin")
+            admin.set_password("admin123")
+            db.session.add(admin)
 
         if Child.query.count() == 0:
             db.session.add_all([Child(name="Ana"), Child(name="Sofía")])
@@ -58,6 +66,19 @@ def initialize_database(app: Flask) -> None:
             )
 
         db.session.commit()
+
+
+def register_auth_guard(app: Flask) -> None:
+    @app.before_request
+    def require_login():
+        public_endpoints = {"auth.login", "static"}
+        if request.endpoint in public_endpoints or request.endpoint is None:
+            return None
+
+        if not session.get("user_id"):
+            return redirect(url_for("auth.login"))
+
+        return None
 
 
 def register_error_handlers(app: Flask) -> None:
