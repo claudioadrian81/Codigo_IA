@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar hija' if child else 'Nueva hija' }}{% endblock %}
+{% block content %}
+<h2 class="ui header">{{ 'Editar hija' if child else 'Nueva hija' }}</h2>
+<form class="ui form" method="post">
+  <div class="field">
+    <label>Nombre</label>
+    <input type="text" name="name" required maxlength="80" value="{{ child.name if child else '' }}">
+  </div>
+  <div class="field">
+    <label>Color (Semantic UI)</label>
+    <input type="text" name="color" maxlength="20" placeholder="blue, red, green..." value="{{ child.color if child else 'blue' }}">
+  </div>
+  <div class="field">
+    <div class="ui checkbox">
+      <input type="checkbox" name="is_active" {% if child is none or child.is_active %}checked{% endif %}>
+      <label>Activa</label>
+    </div>
+  </div>
+  <button class="ui primary button" type="submit">Guardar</button>
+  <a class="ui button" href="{{ url_for('children.list_children') }}">Cancelar</a>
+</form>
+{% endblock %}
