@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}{{ 'Editar actividad' if activity else 'Nueva actividad' }}{% endblock %}
+{% block content %}
+<h2 class="ui header">{{ 'Editar actividad' if activity else 'Nueva actividad' }}</h2>
+<form class="ui form" method="post">
+  <div class="field">
+    <label>Nombre</label>
+    <input type="text" name="name" required maxlength="120" value="{{ activity.name if activity else '' }}">
+  </div>
+  <div class="field">
+    <label>Descripción (opcional)</label>
+    <textarea name="description" rows="3">{{ activity.description if activity else '' }}</textarea>
+  </div>
+  <div class="field">
+    <label>Minutos ganados</label>
+    <input type="number" min="1" name="reward_minutes" required value="{{ activity.reward_minutes if activity else '' }}">
+  </div>
+  <div class="field">
+    <div class="ui checkbox">
+      <input type="checkbox" name="is_active" {% if activity is none or activity.is_active %}checked{% endif %}>
+      <label>Activa</label>
+    </div>
+  </div>
+  <button class="ui primary button" type="submit">Guardar</button>
+  <a class="ui button" href="{{ url_for('activities.list_activities') }}">Cancelar</a>
+</form>
+{% endblock %}
