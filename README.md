@@ -9,6 +9,7 @@ Aplicación web en Flask para registrar tareas domésticas y convertirlas en min
   - Cantidad de tareas realizadas.
   - Últimos registros cargados.
   - Gráfico comparativo.
+- ABM de usuarios (alta, edición, eliminación).
 - ABM de hijas (alta, edición, eliminación).
 - ABM de actividades predefinidas.
 - Registro de tarea realizada con:
@@ -114,19 +115,21 @@ Codigo_IA/
 ├── app/
 │   ├── routes/
 │   │   ├── activities.py
-│   │   ├── children.py
 │   │   ├── auth.py
+│   │   ├── children.py
 │   │   ├── dashboard.py
 │   │   ├── logs.py
-│   │   └── reports.py
+│   │   ├── reports.py
+│   │   └── users.py
 │   ├── static/css/styles.css
 │   ├── templates/
 │   │   ├── activities/
-│   │   ├── children/
 │   │   ├── auth/
+│   │   ├── children/
+│   │   ├── errors/
 │   │   ├── logs/
 │   │   ├── reports/
-│   │   ├── errors/
+│   │   ├── users/
 │   │   ├── base.html
 │   │   └── dashboard.html
 │   ├── __init__.py

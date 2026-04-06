@@ -19,6 +19,7 @@
     <a class="item {% if request.endpoint == 'logs.create_log' %}active{% endif %}" href="{{ url_for('logs.create_log') }}">Registrar tarea</a>
     <a class="item {% if request.endpoint == 'logs.history' %}active{% endif %}" href="{{ url_for('logs.history') }}">Historial</a>
     <a class="item {% if request.endpoint and request.endpoint.startswith('reports.') %}active{% endif %}" href="{{ url_for('reports.index') }}">Reportes</a>
+    <a class="item {% if request.endpoint and request.endpoint.startswith('users.') %}active{% endif %}" href="{{ url_for('users.list_users') }}">Usuarios</a>
     <div class="right menu">
       <div class="item">Usuario: <strong>{{ session.get('username') }}</strong></div>
       <a class="item" href="{{ url_for('auth.logout') }}">Salir</a>

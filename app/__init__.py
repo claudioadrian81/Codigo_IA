@@ -19,6 +19,7 @@ def create_app(config_class: type[Config] = Config) -> Flask:
     from .routes.dashboard import dashboard_bp
     from .routes.logs import logs_bp
     from .routes.reports import reports_bp
+    from .routes.users import users_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
@@ -26,6 +27,7 @@ def create_app(config_class: type[Config] = Config) -> Flask:
     app.register_blueprint(activities_bp)
     app.register_blueprint(logs_bp)
     app.register_blueprint(reports_bp)
+    app.register_blueprint(users_bp)
 
     initialize_database(app)
     register_auth_guard(app)
